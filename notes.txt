@@ -1,0 +1,5 @@
+to look at your html website:
+-> go to command prompt
+-> navigate to folder
+-> run python -m http.server
+-> open localhost:8000 in browser
