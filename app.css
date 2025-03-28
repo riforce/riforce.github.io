@@ -1,0 +1,9 @@
+/*formatting the style of all h1 html tags*/
+h1 {
+    color : rgb(255, 103, 128);
+    font-family: 'Courier New', Courier, monospace;
+}
+
+body {
+    background-color: rgb(251, 241, 135);
+}
