@@ -7,3 +7,38 @@ h1 {
 body {
     background-color: rgb(251, 241, 135);
 }
+
+/* Custom Cursor Styles */
+body {
+    cursor: none;
+}
+
+/* Ensure all elements use the custom cursor */
+* {
+    cursor: none !important;
+}
+
+.custom-cursor {
+    position: fixed;
+    width: 20px;
+    height: 20px;
+    background-image: url('tinyflower.png');
+    background-size: contain; 
+    background-repeat: no-repeat;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    transition: transform 0.1s ease-out;
+}
+
+.custom-cursor.hover {
+    transform: translate(-50%, -50%);
+    background-image: url('tinyflowerpink.png');
+    background-size: contain; 
+    background-repeat: no-repeat;
+}
+
+/* Ensure clickable elements have a default pointer */
+a, button, input {
+    cursor: pointer;
+}
