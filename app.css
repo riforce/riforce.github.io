@@ -1,7 +1,28 @@
-/*formatting the style of all h1 html tags*/
+/* formatting for headers & subheaders*/
+
+.header {
+    padding: 1px; 
+    text-align: center;
+    background:rgb(255, 197, 197);
+    border-radius: 100px;
+}
+.header h1 {
+    font-size: 600%;
+}
+
+.subheader {
+    text-align: center;
+}
+
+/*formatting the style of all different html text tags*/
 h1 {
     color : rgb(255, 103, 128);
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+}
+p {
+    color:rgb(255, 161, 53);
     font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
 }
 
 body {

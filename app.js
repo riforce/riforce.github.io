@@ -1,10 +1,15 @@
 const soundEffect = new Audio('twinklesparkle.mp3');
 
+const postBox = {};
+
+
+// Button stuff
 function sillyButton() {
     soundEffect.play();
     alert("Hello world!")
 }
 
+// Cursor stuff
 document.addEventListener('DOMContentLoaded', () => {
     // Create the custom cursor element
     const cursorEl = document.createElement('div');
