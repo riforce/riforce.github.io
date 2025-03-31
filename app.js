@@ -5,17 +5,21 @@ console.log("script is loading!");
 const protoPosts = [
     {
         id:1,
-        title: "Post 1",
         date: "March 30, 2025",
         content: `<p> Lorum ipsum blah blah blah.</p>`,
         tags: ["test1"]
     },
     {
         id:2,
-        title: "Post 2",
         date: "March 31, 2025",
         content: `<p> Lorum ipsum blah blah blah.</p>`,
         tags: ["test2"]
+    },
+    {
+        id:3,
+        date: "March 40, 2025",
+        content: `<p> Lorum ipsum blah blah blah.</p>`,
+        tags: ["test3"]
     }
 ];
 

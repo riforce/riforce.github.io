@@ -1,3 +1,32 @@
+/*font stuff*/
+@font-face {
+    font-family: 'Bytesized';
+    src: url('fonts/Bytesized-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'PressStart2P';
+    src: url('fonts/PressStart2P-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'VT323';
+    src: url('fonts/VT323-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Silkscreen';
+    src: url('fonts/Silkscreen-Bold.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
 /* formatting for headers & subheaders*/
 .title {
     text-align: center;
@@ -9,24 +38,28 @@
 }
 .subheader {
     text-align: center;
+    color:rgb(255, 161, 53);
+    font-size: 110%;
+    font-family: monospace;
+    font-weight: bold;
+    margin-bottom: 15px;
+    margin-top: 15px;
 }
 
 /*formatting the style of all different html text tags*/
 h1 {
     color : rgb(255, 103, 128);
-    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    font-family: 'Bytesized';
     margin-bottom: 0;
     margin-top: 30px;
 }
 p {
-    color:rgb(255, 161, 53);
+    color:rgb(84, 80, 45);
     font-family: 'Courier New', Courier, monospace;
-    font-weight: bold;
 }
 body {
     background-color: rgb(251, 241, 135);
 }
-
 
 /* Custom Cursor Styles */
 body {
@@ -79,25 +112,21 @@ a, button, input {
 }
 /* Style for individual posts */
 .post {
-    background: white;
+    background: rgb(254, 255, 246);
     border-radius: 15px;
     padding: 20px;
     margin-bottom: 20px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 .post-header {
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #bddd3b;
     padding-bottom: 10px;
     margin-bottom: 15px;
 }
-.post-header h2 {
-    margin: 0 0 5px 0;
-    color: #333;
-}
 .post-date {
-    color: #777;
+    color: #bddd3b;
     font-size: 0.9em;
     margin: 0;
+    font-family: monospace;
 }
 .post-content {
     line-height: 1.6;
@@ -116,16 +145,17 @@ a, button, input {
 }
 .tag {
     display: inline-block;
-    background: #f0f0f0;
+    background: rgb(251, 241, 135);
     border-radius: 20px;
     padding: 3px 10px;
     margin-right: 5px;
     font-size: 0.8em;
-    color: #555;
+    font-family: 'Courier New', Courier, monospace;
+    color: rgb(255, 161, 53);
 }
 /* Custom scrollbar for the post container */
 .post-container::-webkit-scrollbar {
-    width: 8px;
+    width: 15px;
 }
 
 .post-container::-webkit-scrollbar-track {
@@ -134,13 +164,13 @@ a, button, input {
 }
 
 .post-container::-webkit-scrollbar-thumb {
-    background-color: #ccc;
-    border-radius: 10px;
+    background-color: rgb(255, 185, 196);
+    border-radius: 20px;
 }
 
 .post-zone {
-    padding: 1px; 
-    height: 400px;
+    padding: 30px; 
+    height: 520px;
     text-align: left;
     background:rgb(255, 250, 200);
     border-radius: 60px;
