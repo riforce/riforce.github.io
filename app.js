@@ -6,7 +6,6 @@ const postBox = {};
 // Button stuff
 function sillyButton() {
     soundEffect.play();
-    alert("Hello world!")
 }
 
 // Cursor stuff
