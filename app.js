@@ -1,5 +1,139 @@
 console.log("script is loading!");
 
+// configuration for posts
+const postsConfig = {
+    postsDirectory: 'posts/',
+    fileExtension: '.md'
+};
+
+// class to handle blog posts
+class BlogSystem {
+    constructor() {
+        this.posts = [];
+    }
+
+    // fetch and parse all posts
+    async loadPosts() {
+        try {
+            // fetch the list of post files
+            const response = await fetch(`${postsConfig.postsDirectory}index.json`);
+            if(!response.ok) {
+                console.error(`Failed to load index.json: ${response.status} ${response.statusText}`);
+                return [];
+            }
+
+            const postFiles = await response.json();
+
+            // load each post file
+            const postPromises = postFiles.map(async filename => {
+                try {
+                    return await this.loadPostFromFile(filename);
+                } catch (error) {
+                    console.error(`Error loading post ${filename}:`, error);
+                    return null;
+                }
+            });
+            
+            const results = await Promise.all(postPromises);
+            this.posts = results.filter(post => post !== null);
+
+            // sort post by date (newest first)
+            this.posts.sort((a, b) => new Date(b.date) - new Date(a.date));
+            console.log(`Successfully loaded ${this.posts.length} posts`);
+            return this.posts;
+
+        } catch (error) {
+            console.error('Failed to load posts:', error);
+            return [];
+        }
+    }
+
+    // load and parse a single post file
+    async loadPostFromFile(filename) {
+        try {
+            const response = await fetch(`${postsConfig.postsDirectory}${filename}`);
+            if (!response.ok) {
+                console.error(`Failed to fetch ${filename}: ${response.status} ${response.statusText}`);
+                return null;
+            }
+
+            const markdownText = await response.text();
+            console.log(`Successfully loaded ${filename}, length: ${markdownText.length} characters`);
+            
+            //for debugging output the first 100 chars
+            console.log(`First 100 chars: ${markdownText.substring(0, 100).replace(/\n/g, "\\n")}`);
+
+            // parse the markdown file
+            return this.parseMarkdownPost(markdownText, filename);
+
+        } catch (error) {
+            console.error(`failed to load post ${filename}:`, error);
+            return null;
+        }
+    }
+
+    // parse a markdown file into a post object
+    parseMarkdownPost(markdownText, filename) {
+        // extract front matter and context
+        const frontMatterRegex = /^\s*---\s*[\r\n]+([\s\S]*?)[\r\n]+\s*---\s*[\r\n]+([\s\S]*)$/;
+        const frontMatterMatch = markdownText.match(frontMatterRegex);
+
+        if (!frontMatterMatch) {
+            console.error(`Invalid markdown format in ${filename}`);
+            // Create a simple post with basic info for debugging
+            return {
+              id: filename.replace(postsConfig.fileExtension, ''),
+              title: filename,
+              date: new Date().toISOString().split('T')[0],
+              tags: ['debug'],
+              content: marked.parse(markdownText) // Parse the entire file as content
+            };
+          }
+
+        const [, frontMatterText, contentText] = frontMatterMatch;
+
+        //parse front matter
+        const frontMatter = {};
+        frontMatterText.split(/[\r\n]+/).forEach(line => {
+            // skip empty lines
+            if (!line.trim()) return;
+
+            const colonIndex = line.indexOf(':');
+            if (colonIndex === -1) return;
+
+            const key = line.substring(0, colonIndex).trim();
+            const value = line.substring(colonIndex + 1).trim();
+
+            // handle tags specially
+            if (key === 'tags') {
+                // parse tags in format: tags: [tag1, tag2]
+                const tagsMatch = value.match(/\[(.*)\]/);
+                if (tagsMatch) {
+                    frontMatter.tags = tagsMatch[1].split(',').map(tag => tag.trim());
+                } else {
+                    frontMatter.tags = [value];
+                }
+            } else {
+                frontMatter[key] = value;
+            }
+        });
+
+        // Generate ID from filename
+        const id = filename.replace(postsConfig.fileExtension, '');
+
+        // parse content using marked.js
+        const content = marked.parse(contentText);
+
+        return {
+            id,
+            title: frontMatter.title || 'Untitled',
+            date: frontMatter.date || new Date().toISOString().split('T')[0],
+            tags: frontMatter.tags || [],
+            content
+        };
+    }
+}
+
 
 // temporary post data
 const protoPosts = [
@@ -23,31 +157,73 @@ const protoPosts = [
     }
 ];
 
-// Function to load and display blog posts
-function loadBlogPosts () {
+// Main function to load and display blog posts
+async function loadBlogPosts() {
     const postZone = document.querySelector('.post-zone');
-
+  
     if (!postZone) {
-        console.error("Post zone element not found!");
-        return;
-    };
-
+      console.error("Post zone element not found!");
+      return;
+    }
+  
     console.log("loading posts...");
-
+  
     // clear any existing content
     postZone.innerHTML = "";
-
+  
     // create a container for posts that can scroll
     const postContainer = document.createElement('div');
     postContainer.className = 'post-container';
     postZone.appendChild(postContainer);
-
-    // Add each post to the container
-    protoPosts.forEach(post => {
+  
+    // Initialize blog system and load posts
+    const blog = new BlogSystem();
+    const posts = await blog.loadPosts();
+  
+    // Display posts or fallback to protoPosts if none found
+    if (posts.length > 0) {
+      posts.forEach(post => {
+        if (post) {
+          const postElement = createPostElement(post);
+          postContainer.appendChild(postElement);
+        }
+      });
+    } else {
+      console.warn("No markdown posts found, falling back to prototype posts");
+      protoPosts.forEach(post => {
         const postElement = createPostElement(post);
         postContainer.appendChild(postElement);
-    });
-};
+      });
+    }
+  }
+  
+
+// ORIGINAL
+// // Function to load and display blog posts
+// function loadBlogPosts () {
+//     const postZone = document.querySelector('.post-zone');
+
+//     if (!postZone) {
+//         console.error("Post zone element not found!");
+//         return;
+//     };
+
+//     console.log("loading posts...");
+
+//     // clear any existing content
+//     postZone.innerHTML = "";
+
+//     // create a container for posts that can scroll
+//     const postContainer = document.createElement('div');
+//     postContainer.className = 'post-container';
+//     postZone.appendChild(postContainer);
+
+//     // Add each post to the container
+//     protoPosts.forEach(post => {
+//         const postElement = createPostElement(post);
+//         postContainer.appendChild(postElement);
+//     });
+// }
 
 // Function to create a post element
 function createPostElement(post) {
