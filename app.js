@@ -4,7 +4,7 @@ console.log("script is loading!");
 const postsConfig = {
     postsDirectory: window.location.hostname === 'localhost' ||
                     window.location.hostname === '127.0.0.1' ?
-                    'posts/' : '/posts/',
+                    'posts/' : '/riforce.github.io/posts/',
     fileExtension: '.md'
 };
 
