@@ -2,9 +2,19 @@ console.log("script is loading!");
 
 // configuration for posts
 const postsConfig = {
-    postsDirectory: 'posts/',
+    postsDirectory: window.location.hostname === 'localhost' ||
+                    window.location.hostname === '127.0.0.1' ?
+                    'posts/' : '/posts/',
     fileExtension: '.md'
 };
+
+
+// const postsConfig = {
+//     postsDirectory: 'posts/',
+//     fileExtension: '.md'
+// };
+
+
 
 // class to handle blog posts
 class BlogSystem {
