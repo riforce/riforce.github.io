@@ -126,7 +126,7 @@ class BlogSystem {
 
         return {
             id,
-            title: frontMatter.title || 'Untitled',
+            title: frontMatter.title || '',
             date: frontMatter.date || new Date().toISOString().split('T')[0],
             tags: frontMatter.tags || [],
             content
