@@ -1,12 +1,20 @@
 console.log("script is loading!");
 
 // configuration for posts
+
 const postsConfig = {
     postsDirectory: window.location.hostname === 'localhost' ||
                     window.location.hostname === '127.0.0.1' ?
-                    'posts/' : '/riforce.github.io/posts/',
+                    'posts/' : '/posts/',
     fileExtension: '.md'
 };
+
+// const postsConfig = {
+//     postsDirectory: window.location.hostname === 'localhost' ||
+//                     window.location.hostname === '127.0.0.1' ?
+//                     'posts/' : '/riforce.github.io/posts/',
+//     fileExtension: '.md'
+// };
 
 
 // const postsConfig = {
