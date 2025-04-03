@@ -166,7 +166,8 @@ async function loadBlogPosts() {
   
     if (!postZone) {
       console.error("Post zone element not found!");
-      return;
+    //   return;
+      return Promise.reject("Post zone not found");
     }
   
     console.log("loading posts...");
@@ -183,7 +184,7 @@ async function loadBlogPosts() {
     const blog = new BlogSystem();
     const posts = await blog.loadPosts();
   
-    // Display posts or fallback to protoPosts if none found
+    // Display posts or fall back to protoPosts if none found
     if (posts.length > 0) {
       posts.forEach(post => {
         if (post) {
@@ -198,6 +199,8 @@ async function loadBlogPosts() {
         postContainer.appendChild(postElement);
       });
     }
+
+    return Promise.resolve(posts); // return a resolved promise when done
   }
   
 
@@ -247,11 +250,242 @@ function sillyButton() {
     soundEffect.play();
 }
 
-// Cursor stuff
+
+// Function to convert multiple adjacent images to slideshows
+function initializeSlideshows() {
+    console.log("Initializing slideshows...");
+    
+    // Target the post-zone specifically
+    const postZone = document.querySelector('.post-zone');
+    if (!postZone) {
+      console.error("Post zone not found!");
+      return;
+    }
+    
+    // Find all posts within the post-zone
+    const posts = postZone.querySelectorAll('.post');
+    console.log(`Found ${posts.length} posts in the post zone`);
+    
+    posts.forEach((post, postIndex) => {
+      console.log(`Processing post #${postIndex + 1}`);
+      
+      // Find all images in the post
+      const images = post.querySelectorAll('img');
+      console.log(`Found ${images.length} images in post #${postIndex + 1}`);
+      
+      if (images.length <= 1) {
+        console.log("Not enough images for a slideshow in this post");
+        return;
+      }
+      
+      // Group adjacent images
+      const imageGroups = [];
+      let currentGroup = [];
+      let currentParent = null;
+      
+      images.forEach((img, imgIndex) => {
+        const imgParent = img.parentElement;
+        console.log(`Image ${imgIndex + 1} parent tag: ${imgParent.tagName}`);
+        
+        // Check if we have siblings between images
+        let hasTextBetween = false;
+        if (imgIndex > 0) {
+          // Check all nodes between previous and current image
+          let node = images[imgIndex - 1].nextSibling;
+          while (node && node !== img) {
+            if (node.nodeType === 3 && node.textContent.trim() !== '') { // Text node with content
+              hasTextBetween = true;
+              console.log("Found text between images:", node.textContent.trim());
+              break;
+            }
+            node = node.nextSibling;
+          }
+        }
+        
+        // If this is a new parent or new paragraph or has text between, start new group
+        if (!currentParent || imgParent !== currentParent || hasTextBetween) {
+          if (currentGroup.length > 0) {
+            imageGroups.push([...currentGroup]);
+            console.log(`Created group with ${currentGroup.length} images`);
+          }
+          currentGroup = [img];
+          currentParent = imgParent;
+        } else {
+          // Same parent, add to current group
+          currentGroup.push(img);
+        }
+      });
+      
+      // Don't forget the last group
+      if (currentGroup.length > 0) {
+        imageGroups.push(currentGroup);
+        console.log(`Created final group with ${currentGroup.length} images`);
+      }
+      
+      console.log(`Found ${imageGroups.length} image groups`);
+      
+      // Only create slideshows for groups with multiple images
+      imageGroups.filter(group => group.length > 1).forEach((group, groupIndex) => {
+        console.log(`Creating slideshow for group #${groupIndex + 1} with ${group.length} images`);
+        createSlideshow(group);
+      });
+    });
+}
+  
+// Function to create a slideshow from a group of images
+function createSlideshow(imageGroup) {
+    console.log("Creating slideshow...");
+    
+    if (!imageGroup || imageGroup.length <= 1) {
+      console.warn("Not enough images for slideshow");
+      return;
+    }
+    
+    // create slideshow container
+    const slideshowContainer = document.createElement('div');
+    slideshowContainer.className = 'slideshow-container';
+    
+    // create slides container
+    const slidesContainer = document.createElement('div');
+    slidesContainer.className = 'slides';
+    
+    // add each image as a slide
+    imageGroup.forEach((img, i) => {
+      const slide = document.createElement('div');
+      slide.className = 'slide'; // Fixed: was 'classname'
+      
+      // clone the image to use in the slideshow
+      const imgClone = img.cloneNode(true);
+      slide.appendChild(imgClone);
+      slidesContainer.appendChild(slide);
+      console.log(`Added slide ${i + 1} with image: ${imgClone.src}`);
+    });
+  
+    // create navigation buttons
+    const prevButton = document.createElement('button');
+    prevButton.className = 'prev-button';
+    prevButton.innerHTML = '&#10094;'; // left arrow
+    
+    const nextButton = document.createElement('button');
+    nextButton.className = 'next-button';
+    nextButton.innerHTML = '&#10095;'; // Right arrow
+  
+    // create dots container to show navigation
+    const dotsContainer = document.createElement('div');
+    dotsContainer.className = 'dots-container';
+  
+    // add navigation dots
+    imageGroup.forEach((_, index) => {
+      const dot = document.createElement('span');
+      dot.className = index === 0 ? 'dot active' : 'dot';
+      dot.dataset.index = index;
+      dotsContainer.appendChild(dot);
+    });
+  
+    // assemble slideshow
+    slideshowContainer.appendChild(slidesContainer);
+    slideshowContainer.appendChild(prevButton);
+    slideshowContainer.appendChild(nextButton);
+    slideshowContainer.appendChild(dotsContainer);
+  
+    // replace the first image with the slideshow
+    const firstImg = imageGroup[0];
+    const parentElement = firstImg.parentNode;
+    console.log(`Parent element of first image: ${parentElement.tagName}`);
+  
+    // if the parent is a paragraph, replace the paragraph
+    if (parentElement.tagName === 'P') {
+      console.log("Replacing parent paragraph with slideshow");
+      parentElement.parentNode.replaceChild(slideshowContainer, parentElement);
+    } else {
+      // otherwise insert before the first image and remove all images
+      console.log("Inserting slideshow before first image");
+      parentElement.insertBefore(slideshowContainer, firstImg);
+    }
+  
+    // remove the original images from the DOM
+    imageGroup.forEach(img => {
+      if (img.parentNode) {
+        console.log(`Removing original image: ${img.src}`);
+        img.remove();
+      }
+    });
+    
+    // initialize slideshow functionality
+    console.log("Initializing slideshow controls");
+    initSlideshow(slideshowContainer);
+}
+
+// function to handle slideshow movement
+function initSlideshow(container) {
+    console.log("Setting up slideshow controls");
+    
+    const slides = container.querySelector('.slides');
+    const prevButton = container.querySelector('.prev-button');
+    const nextButton = container.querySelector('.next-button');
+    const dots = container.querySelectorAll('.dot');
+    let currentIndex = 0;
+    
+    if (!slides || !prevButton || !nextButton) {
+      console.error("Missing slideshow elements", { slides, prevButton, nextButton });
+      return;
+    }
+    
+    // function to show a specific slide
+    function showSlide(index) {
+      const totalSlides = slides.children.length;
+      console.log(`Showing slide ${index + 1} of ${totalSlides}`);
+  
+      // handle wrapping
+      if (index < 0) {
+        currentIndex = totalSlides - 1;
+      } else if (index >= totalSlides) {
+        currentIndex = 0;
+      } else {
+        currentIndex = index;
+      }
+  
+      // move the slides
+      slides.style.transform = `translateX(-${currentIndex * 100}%)`;
+      
+      // update active dot
+      dots.forEach((dot, i) => {
+        dot.className = i === currentIndex ? 'dot active' : 'dot';
+      });
+    }
+  
+    // set up event listeners
+    prevButton.addEventListener('click', () => {
+      console.log("Previous button clicked");
+      showSlide(currentIndex - 1);
+    });
+    
+    nextButton.addEventListener('click', () => {
+      console.log("Next button clicked");
+      showSlide(currentIndex + 1);
+    });
+  
+    dots.forEach(dot => {
+      dot.addEventListener('click', () => {
+        const index = parseInt(dot.dataset.index);
+        console.log(`Dot ${index + 1} clicked`);
+        showSlide(index);
+      });
+    });
+  
+    // show the first slide
+    showSlide(0);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DOM is loaded!");
     // load blog posts
-    loadBlogPosts();
+
+    // loadBlogPosts();
+    loadBlogPosts().then(() => {
+        console.log("Blog posts loaded, initializing slideshows");
+        setTimeout(initializeSlideshows, 500); // give time for posts to render
+    });
 
     // Create the custom cursor element
     const cursorEl = document.createElement('div');
@@ -276,5 +510,5 @@ document.addEventListener('DOMContentLoaded', () => {
             cursorEl.classList.remove('hover');
         });
     });
-});
 
+});

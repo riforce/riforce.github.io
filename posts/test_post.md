@@ -16,6 +16,7 @@ Turns out all you need to make a fool of yourself on the internet is a GitHub ac
 - Pumpin spice oatmeal 
 
 ![Me, obviously.](/images/computerwizard.jpg)
+![Deborah.](/images/testcat.jpg)
 
 
 Check out [this sick video](https://www.youtube.com/watch?v=XfELJU1mRMg).
