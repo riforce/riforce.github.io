@@ -9,21 +9,6 @@ const postsConfig = {
     fileExtension: '.md'
 };
 
-// const postsConfig = {
-//     postsDirectory: window.location.hostname === 'localhost' ||
-//                     window.location.hostname === '127.0.0.1' ?
-//                     'posts/' : '/riforce.github.io/posts/',
-//     fileExtension: '.md'
-// };
-
-
-// const postsConfig = {
-//     postsDirectory: 'posts/',
-//     fileExtension: '.md'
-// };
-
-
-
 // class to handle blog posts
 class BlogSystem {
     constructor() {
@@ -215,33 +200,6 @@ async function loadBlogPosts() {
     }
   }
   
-
-// ORIGINAL
-// // Function to load and display blog posts
-// function loadBlogPosts () {
-//     const postZone = document.querySelector('.post-zone');
-
-//     if (!postZone) {
-//         console.error("Post zone element not found!");
-//         return;
-//     };
-
-//     console.log("loading posts...");
-
-//     // clear any existing content
-//     postZone.innerHTML = "";
-
-//     // create a container for posts that can scroll
-//     const postContainer = document.createElement('div');
-//     postContainer.className = 'post-container';
-//     postZone.appendChild(postContainer);
-
-//     // Add each post to the container
-//     protoPosts.forEach(post => {
-//         const postElement = createPostElement(post);
-//         postContainer.appendChild(postElement);
-//     });
-// }
 
 // Function to create a post element
 function createPostElement(post) {

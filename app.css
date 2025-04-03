@@ -7,27 +7,37 @@
 }
 
 @font-face {
-    font-family: 'PressStart2P';
-    src: url('fonts/PressStart2P-Regular.ttf') format('truetype');
+    font-family: 'Blobby';
+    src: url('fonts/BagelFatOne-Regular.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
-    font-family: 'VT323';
-    src: url('fonts/VT323-Regular.ttf') format('truetype');
+    font-family: 'Modern Spacy';
+    src: url('fonts/AdventPro_ExtraExpanded-Regular.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
-    font-family: 'Silkscreen';
-    src: url('fonts/Silkscreen-Bold.ttf') format('truetype');
+    font-family: 'Blocks';
+    src: url('fonts/Monofett-Regular.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
 
-/* formatting for headers & subheaders*/
+@font-face {
+    font-family: 'Typewriter';
+    src:url('fonts/KodeMono-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/*===========================
+    GENERAL PAGE STYLING
+=============================*/
+
 .title {
     text-align: center;
     font-size: 250%;
@@ -39,24 +49,25 @@
 .subheader {
     text-align: center;
     color:rgb(255, 161, 53);
-    font-size: 110%;
-    font-family: monospace;
+    font-size: 100%;
+    font-family: 'Typewriter';
     font-weight: bold;
     margin-bottom: 15px;
     margin-top: 15px;
 }
 
-/*formatting the style of all different html text tags*/
 h1 {
     color : rgb(255, 103, 128);
     font-family: 'Bytesized';
     margin-bottom: 0;
     margin-top: 30px;
 }
+
 p {
     color:rgb(84, 80, 45);
     font-family: 'Courier New', Courier, monospace;
 }
+
 body {
     background-color: rgb(251, 241, 135);
 }
@@ -65,6 +76,10 @@ body {
 body {
     cursor: none;
 }
+
+/*========================
+    CURSOR STYLING
+==========================*/
 
 /* Ensure all elements use the custom cursor */
 * {
@@ -98,10 +113,12 @@ a, button, input {
 
 /* Formatting image stuff */
 .flower-guy {
-    width: 100px;
+    width: 200px;
 }
 
-/* styling for the post zone */
+/*==========================
+    POST ZONE STYLING
+============================*/
 
 /* Make the post container scrollable */
 .post-container {
@@ -110,6 +127,7 @@ a, button, input {
     padding: 20px 40px;
     box-sizing: border-box;
 }
+
 /* Style for individual posts */
 .post {
     background: rgb(254, 255, 246);
@@ -117,32 +135,39 @@ a, button, input {
     padding: 20px;
     margin-bottom: 20px;
 }
+
 .post-header {
     border-bottom: 1px solid #bddd3b;
     padding-bottom: 10px;
     margin-bottom: 15px;
 }
+
 .post-date {
     color: #bddd3b;
     font-size: 0.9em;
     margin: 0;
-    font-family: monospace;
+    font-family: 'Modern Spacy';
 }
+
 .post-content {
     line-height: 1.6;
 }
+
 .post-content img {
     max-width: 100%;
     border-radius: 8px;
     margin: 10px 0;
 }
+
 .post-content audio {
     width: 100%;
     margin: 10px 0;
 }
+
 .post-tags {
     margin-top: 15px;
 }
+
 .tag {
     display: inline-block;
     background: rgb(251, 241, 135);
@@ -150,9 +175,10 @@ a, button, input {
     padding: 3px 10px;
     margin-right: 5px;
     font-size: 0.8em;
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Modern Spacy';
     color: rgb(255, 161, 53);
 }
+
 /* Custom scrollbar for the post container */
 .post-container::-webkit-scrollbar {
     width: 15px;
@@ -175,3 +201,49 @@ a, button, input {
     background:rgb(255, 250, 200);
     border-radius: 60px;
 } 
+
+/*===========================
+    POST CONTENT STYLING
+=============================*/
+
+.post-content h1 {
+    font-family: 'Blobby';
+    color: rgb(255, 103, 128);
+}
+
+.post-content h2 {
+    font-family: 'Blobby';
+    color: rgb(202, 200, 66);
+}
+
+.post-content p {
+    font-family: 'Typewriter';
+    font-size: 80%;
+    color: rgb(132, 123, 39);
+}
+
+.post-content ul {
+    font-family: 'Typewriter';
+    font-size: 80%;
+    color:rgb(132, 123, 39);
+    list-style-type: "\1FAD2";
+}
+.post-content ul li {
+    position: relative;
+    padding-left: 0.5em; /* Make space for emoji */
+}
+
+.post-content a {
+    color: #bddd3b;
+    text-decoration: none;
+}
+.post-content a:hover {
+    color: #ccff00;
+}
+
+.post-content img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+  }
