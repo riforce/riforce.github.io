@@ -361,6 +361,10 @@ function createSlideshow(imageGroup) {
       console.log(`Added slide ${i + 1} with image: ${imgClone.src}`);
     });
   
+    // create navigation container for buttons and dots
+    const navigationContainer = document.createElement('div');
+    navigationContainer.className = 'slideshow-navigation';
+
     // create navigation buttons
     const prevButton = document.createElement('button');
     prevButton.className = 'prev-button';
@@ -381,12 +385,15 @@ function createSlideshow(imageGroup) {
       dot.dataset.index = index;
       dotsContainer.appendChild(dot);
     });
+
+    // assemble navigation: prev button, dots, next button
+    navigationContainer.appendChild(prevButton);
+    navigationContainer.appendChild(dotsContainer);
+    navigationContainer.appendChild(nextButton);
   
     // assemble slideshow
     slideshowContainer.appendChild(slidesContainer);
-    slideshowContainer.appendChild(prevButton);
-    slideshowContainer.appendChild(nextButton);
-    slideshowContainer.appendChild(dotsContainer);
+    slideshowContainer.appendChild(navigationContainer);
   
     // replace the first image with the slideshow
     const firstImg = imageGroup[0];
@@ -475,7 +482,31 @@ function initSlideshow(container) {
   
     // show the first slide
     showSlide(0);
+
+    // setup cursor interactions
+    setupSlideshowCursorInteractions();
 }
+
+// Function to add event listeners for the custom cursor
+function setupSlideshowCursorInteractions() {
+    // Get all slideshow navigation elements
+    const slideshowControls = document.querySelectorAll('.prev-button, .next-button, .dot');
+    
+    // Add hover effect for custom cursor
+    slideshowControls.forEach(control => {
+      control.addEventListener('mouseenter', () => {
+        const cursorEl = document.querySelector('.custom-cursor');
+        if (cursorEl) cursorEl.classList.add('hover');
+      });
+      
+      control.addEventListener('mouseleave', () => {
+        const cursorEl = document.querySelector('.custom-cursor');
+        if (cursorEl) cursorEl.classList.remove('hover');
+      });
+    });
+}
+
+
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DOM is loaded!");
@@ -510,5 +541,10 @@ document.addEventListener('DOMContentLoaded', () => {
             cursorEl.classList.remove('hover');
         });
     });
+
+    // After some time (to ensure slideshows are created)
+    setTimeout(() => {
+        setupSlideshowCursorInteractions();
+    }, 500);
 
 });

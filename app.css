@@ -248,72 +248,101 @@ a, button, input {
     margin: 0 auto;
   }
 
-  /*===========================
+/*===========================
     IMAGE SLIDESHOW STYLING
 =============================*/
 .slideshow-container {
     position: relative;
     width: 100%;
-    max-width: 600px;
+    max-width: 700px;
     margin: 20px auto;
     overflow: hidden;
-  }
+    border-radius: 8px;
+    padding: 10px;
+}
   
-  .slides {
+.slides {
     display: flex;
     transition: transform 0.5s ease;
     width: 100%;
-  }
+}
   
-  .slide {
+.slide {
     min-width: 100%;
     flex: 0 0 100%;
-  }
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
   
-  .slide img {
-    width: 100%;
-    height: auto;
+.slide img {
+    max-width: 100%;
+    max-height: 100%;
+    margin: 0;
+    object-fit: contain;
     display: block;
-  }
-  
-  .prev-button,
-  .next-button {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(0, 0, 0, 0.5);
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    cursor: pointer;
-    font-size: 18px;
-    z-index: 2;
-  }
-  
-  .prev-button {
-    left: 10px;
-  }
-  
-  .next-button {
-    right: 10px;
-  }
-  
-  .dots-container {
+}
+
+/* Navigation container styles */
+
+.slideshow-navigation {
     display: flex;
     justify-content: center;
-    margin-top: 10px;
-  }
+    align-items: center;
+    margin-top: 15px;
+}
   
-  .dot {
+.prev-button,
+.next-button {
+    background: rgba(255, 161, 53, 0.7);
+    color: rgb(255, 250, 200);
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.prev-button {
+    margin-right: 15px;
+}
+
+.next-button {
+    margin-left: 15px;
+}
+
+.prev-button:hover,
+.next-button:hover {
+    background: rgb(255, 198, 133);
+}
+  
+.dots-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+  
+.dot {
     width: 10px;
     height: 10px;
     background-color: #bbb;
     border-radius: 50%;
     margin: 0 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
+}
   
-  .dot.active {
-    background-color: #717171;
-  }
+.dot.active {
+    background-color: rgb(255, 161, 53);
+    /* Make active dot slightly larger */
+    transform: scale(1.2);
+}
+
+/* Add hover effect for dots */
+.dot:hover {
+    background-color: rgb(255, 103, 128);
+}
