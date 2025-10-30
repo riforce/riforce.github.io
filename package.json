@@ -1,0 +1,11 @@
+{
+    "name": "webbed-site",
+    "version": "1.0.0",
+    "description": "personal blog website",
+    "scripts": {
+        "generate-index": "node scripts/generate-index.js"
+    },
+    "keywords": ["blog"],
+    "author": "Riley Murray",
+    "license": "MIT"
+}
