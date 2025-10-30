@@ -13,6 +13,8 @@ const postsConfig = {
 class BlogSystem {
     constructor() {
         this.posts = [];
+        this.postsPerPage = 5;
+        this.currentPage = 0;
     }
 
     // fetch and parse all posts
