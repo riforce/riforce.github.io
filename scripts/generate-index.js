@@ -42,4 +42,4 @@ fs.writeFileSync(
     JSON.stringify(postsWithDates.map(p=>p.file), null, 2)
 );
 
-console.log('Generated index.json with ${postFiles.length} posts');
+console.log(`Generated index.json with ${postFiles.length} posts`);
