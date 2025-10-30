@@ -2,16 +2,20 @@
 const fs = require('fs');
 const path = require('path');
 
-function getAllMarkdownFiles(dir, fileList = []){
+// resolve paths relative to the script location
+const postsDir = path.join(__dirname, '..', 'posts');
+const indexPath = path.join(postsDir, 'index.json');
+
+function getAllMarkdownFiles(dir, baseDir = dir, fileList = []){
     const files = fs.readdirSync(dir);
 
     files.forEach(file => {
         const filePath = path.join(dir, file);
         if (fs.statSync(filePath).isDirectory()) {
-            getAllMarkdownFiles(filePath, fileList);
+            getAllMarkdownFiles(filePath, baseDir, fileList);
         } else if (file.endsWith('.md')) {
             // store relative path from posts directory
-            const relativePath = path.relative('posts', filePath);
+            const relativePath = path.relative(baseDir, filePath);
             fileList.push(relativePath.replace(/\\/g, '/')); //Normalize path separators
         }
     });
@@ -19,11 +23,11 @@ function getAllMarkdownFiles(dir, fileList = []){
     return fileList;
 }
 
-const postFiles = getAllMarkdownFiles('posts');
+const postFiles = getAllMarkdownFiles(postsDir);
 
 // sort by date (newest first) by reading front matter
 const postsWithDates = postFiles.map(file => {
-    const content = fs.readFileSync(path.join('posts', file), 'utf8');
+    const content = fs.readFileSync(path.join(postsDir, file), 'utf8');
     const dateMatch = content.match(/^date:\s*(.+)$/m);
     return {
         file,
@@ -34,7 +38,7 @@ const postsWithDates = postFiles.map(file => {
 postsWithDates.sort((a,b) => b.date - a.date);
 
 fs.writeFileSync(
-    'posts/index.json',
+    indexPath,
     JSON.stringify(postsWithDates.map(p=>p.file), null, 2)
 );
 
