@@ -724,10 +724,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // load blog posts
 
     // loadBlogPosts();
-    loadBlogPosts().then(() => {
-        console.log("Blog posts loaded, initializing slideshows");
-        setTimeout(initializeSlideshows, 500); // give time for posts to render
-    });
+    // loadBlogPosts().then(() => {
+    //     console.log("Blog posts loaded, initializing slideshows");
+    //     setTimeout(initializeSlideshows, 500); // give time for posts to render
+    // });
+    initializeBlog();
 
     // Create the custom cursor element
     const cursorEl = document.createElement('div');
