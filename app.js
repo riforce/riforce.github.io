@@ -1,7 +1,6 @@
 console.log("script is loading!");
 
 // configuration for posts
-
 const postsConfig = {
     postsDirectory: window.location.hostname === 'localhost' ||
                     window.location.hostname === '127.0.0.1' ?
@@ -13,44 +12,114 @@ const postsConfig = {
 class BlogSystem {
     constructor() {
         this.posts = [];
-        this.postsPerPage = 5;
+        this.postFileList = [];
+        this.postsPerPage = 5; // load 5 posts at a time
         this.currentPage = 0;
+        this.isLoading = false;
+        this.allPostsLoaded = false;
     }
 
     // fetch and parse all posts
-    async loadPosts() {
-        try {
-            // fetch the list of post files
-            const response = await fetch(`${postsConfig.postsDirectory}index.json`);
-            if(!response.ok) {
-                console.error(`Failed to load index.json: ${response.status} ${response.statusText}`);
-                return [];
-            }
+    // async loadPosts() {
+    //     try {
+    //         // fetch the list of post files
+    //         const response = await fetch(`${postsConfig.postsDirectory}index.json`);
+    //         if(!response.ok) {
+    //             console.error(`Failed to load index.json: ${response.status} ${response.statusText}`);
+    //             return [];
+    //         }
 
-            const postFiles = await response.json();
+    //         const postFiles = await response.json();
 
-            // load each post file
-            const postPromises = postFiles.map(async filename => {
-                try {
-                    return await this.loadPostFromFile(filename);
-                } catch (error) {
-                    console.error(`Error loading post ${filename}:`, error);
-                    return null;
-                }
-            });
+    //         // load each post file
+    //         const postPromises = postFiles.map(async filename => {
+    //             try {
+    //                 return await this.loadPostFromFile(filename);
+    //             } catch (error) {
+    //                 console.error(`Error loading post ${filename}:`, error);
+    //                 return null;
+    //             }
+    //         });
             
-            const results = await Promise.all(postPromises);
-            this.posts = results.filter(post => post !== null);
+    //         const results = await Promise.all(postPromises);
+    //         this.posts = results.filter(post => post !== null);
 
-            // sort post by date (newest first)
-            this.posts.sort((a, b) => new Date(b.date) - new Date(a.date));
-            console.log(`Successfully loaded ${this.posts.length} posts`);
-            return this.posts;
+    //         // sort post by date (newest first)
+    //         this.posts.sort((a, b) => new Date(b.date) - new Date(a.date));
+    //         console.log(`Successfully loaded ${this.posts.length} posts`);
+    //         return this.posts;
 
-        } catch (error) {
-            console.error('Failed to load posts:', error);
-            return [];
+    //     } catch (error) {
+    //         console.error('Failed to load posts:', error);
+    //         return [];
+    //     }
+    // }
+
+    // initialize: fetch the list of post files
+    async initialize() {
+      try {
+        const response = await fetch(`${postsConfig.postsDirectory}index.json`);
+        if(!response.ok) {
+          console.error(`Failed to load index.json: ${response.status} ${response.statusText}`);
+          return false;
         }
+
+        this.postFileList = await response.json();
+        console.log(`Found ${this.postFileList.length} posts in index`);
+        return true;
+      } catch (error) {
+        console.error('Failed to load index.json:', error);
+        return false;
+      }
+    }
+
+    // load a specific page of posts
+    async loadPage(pageNum) {
+      if (this.isLoading) {
+        console.log("Already loading posts, skipping...");
+        return [];
+      }
+
+      const start = pageNum * this.postsPerPage;
+      const end = start + this.postsPerPage;
+
+      if (start >= this.postFileList.length) {
+        this.allPostsLoaded = true;
+        console.log("All posts loaded!");
+        return [];
+      }
+
+      this.isLoading = true;
+      const filesToLoad = this.postFileList.slice(start, end);
+      console.log(`Loading posts ${start + 1} to ${Math.min(end, this.postFileList.length)}`);
+
+      try {
+        const postPromises = filesToLoad.map(async filename => {
+          try {
+            return await this.loadPostFromFile(filename);
+          } catch (error) {
+            console.error(`Error loading post ${filename}:`, error);
+            return null;
+          }
+        });
+        const newPosts = await Promise.all(postPromises);
+        const validPosts = newPosts.filter(post => post !== null);
+
+        this.posts.push(...validPosts);
+        this.currentPage = pageNum;
+
+        if (end >= this.postFileList.length) {
+          this.allPostsLoaded = true;
+        }
+         return validPosts;
+      } finally {
+        this.isLoading = false;
+      }
+    }
+
+    // load the next page
+    async loadNextPage() {
+      return this.loadPage(this.currentPage + 1);
     }
 
     // load and parse a single post file
@@ -64,17 +133,35 @@ class BlogSystem {
 
             const markdownText = await response.text();
             console.log(`Successfully loaded ${filename}, length: ${markdownText.length} characters`);
-            
-            //for debugging output the first 100 chars
-            console.log(`First 100 chars: ${markdownText.substring(0, 100).replace(/\n/g, "\\n")}`);
 
             // parse the markdown file
-            return this.parseMarkdownPost(markdownText, filename);
+            const post = this.parseMarkdownPost(markdownText, filename);
+
+            // add lazy loading to images
+            if (post && post.content) {
+              post.content = this.optimizeImages(post.content);
+            }
+
+            return post;
 
         } catch (error) {
             console.error(`failed to load post ${filename}:`, error);
             return null;
         }
+    }
+
+    // add lazy loading attribute to images
+    optimizeImages(htmlContent) {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(htmlContent, 'text/html');
+      const images = doc.querySelectorAll('img');
+
+      images.forEach(img => {
+        //add lazy loading
+        img.loading = 'lazy';
+      });
+
+      return doc.body.innerHTML;
     }
 
     // parse a markdown file into a post object
@@ -162,48 +249,170 @@ const protoPosts = [
     }
 ];
 
-// Main function to load and display blog posts
-async function loadBlogPosts() {
-    const postZone = document.querySelector('.post-zone');
+// global blog instance
+let blog = null;
+
+// Main funcion to initialize blog
+async function initializeBlog() {
+  const postZone = document.querySelector('.post-zone');
+
+  if (!postZone) {
+    console.error("Post zone element not found!");
+    return Promise.reject("Post zone not found.");
+  }
+
+  console.log("Initializing blog...");
+
+  // clear any existing content
+  postZone.innerHTML = "";
+
+  // create a container for posts
+  const postContainer = document.createElement('div');
+  postContainer.className = 'post-container';
+  postZone.appendChild(postContainer);
+
+  // create loading indicator
+  // want to make this more modular?? Keep styling separate?
+  const loadingIndicator = document.createElement('div');
+  loadingIndicator.className = 'loading-indicator';
+  loadingIndicator.textContent = 'Loading posts...';
+  loadingIndicator.style.textAlign = 'center';
+  loadingIndicator.style.padding = '20px';
+  postZone.appendChild(loadingIndicator);
+
+  // create "load more" button
+  const loadMoreBtn = document.createElement('button');
+  loadMoreBtn.className = 'load-more-btn';
+  loadMoreBtn.textContent = 'Load More Posts';
+  loadMoreBtn.style.display = 'none';
+  loadMoreBtn.style.margin = '20px auto';
+  loadMoreBtn.style.padding = '10px 20px';
+  loadMoreBtn.style.display = 'block';
+  postZone.appendChild(loadMoreBtn);
+
+  // initialize blog system
+  blog = new BlogSystem();
+  const initialized = await blog.initialize();
+
+  if (!initialized) {
+    console.warn("Failed to initialize blog, using prototype posts");
+    displayPrototypePosts(postContainer);
+    loadingIndicator.style.display = 'none';
+    loadMoreBtn.style.display = 'none';
+    return;
+  }
+
+  // load first page
+  await loadMorePosts();
+
+  // set up load more button
+  loadMoreBtn.addEventListener('click', loadMorePosts);
+
+  return Promise.resolve();
   
-    if (!postZone) {
-      console.error("Post zone element not found!");
-    //   return;
-      return Promise.reject("Post zone not found");
-    }
-  
-    console.log("loading posts...");
-  
-    // clear any existing content
-    postZone.innerHTML = "";
-  
-    // create a container for posts that can scroll
-    const postContainer = document.createElement('div');
-    postContainer.className = 'post-container';
-    postZone.appendChild(postContainer);
-  
-    // Initialize blog system and load posts
-    const blog = new BlogSystem();
-    const posts = await blog.loadPosts();
-  
-    // Display posts or fall back to protoPosts if none found
-    if (posts.length > 0) {
-      posts.forEach(post => {
-        if (post) {
-          const postElement = createPostElement(post);
-          postContainer.appendChild(postElement);
-        }
-      });
-    } else {
-      console.warn("No markdown posts found, falling back to prototype posts");
-      protoPosts.forEach(post => {
+}
+
+//Function to load more posts
+async function loadMorePosts() {
+  const postContainer = document.querySelector('.post-container');
+  const loadingIndicator = document.querySelector('.loading-indicator');
+  const loadMoreBtn = document.querySelector('.load-more-btn');
+
+  if(!blog || blog.allPostsLoaded) {
+    console.log("No more posts to load.");
+    loadMoreBtn.style.display = 'none';
+    loadingIndicator.style.display = 'none';
+    return;
+  }
+
+  //show loading indicator
+  loadingIndicator.style.display = 'block';
+  loadMoreBtn.disabled = true;
+
+  try {
+    const newPosts = await blog.loadNextPage();
+
+    if (newPosts.length > 0) {
+      newPosts.forEach(post => {
         const postElement = createPostElement(post);
         postContainer.appendChild(postElement);
       });
+
+      // initialize slideshows for new posts
+      setTimeout(() => {
+        initializeSlideshows();
+        setupSlideshowCursorInteractions();
+      }, 100);
     }
 
-    return Promise.resolve(posts); // return a resolved promise when done
+    // update button visibility
+    if (blog.allPostsLoaded) {
+      loadMoreBtn.style.display = 'none';
+      loadingIndicator.textContent = "All posts loaded!";
+      setTimeout(() => {
+        loadingIndicator.style.display = 'none';
+      }, 2000);
+    } else {
+      loadMoreBtn.disabled = false;
+      loadingIndicator.style.display = 'none';
+    }
+  } catch (error) {
+    console.error("Error loading posts:", error);
+    loadingIndicator.textContent = 'Error loading posts.';
+    loadMoreBtn.disabled = false;
   }
+}
+
+// function to display prototype posts as fallback
+function displayPrototypePosts(postContainer) {
+  protoPosts.forEach(post => {
+    const postElement = createPostElement(post);
+    postContainer.appendChild(postElement);
+  });
+}
+
+// // Main function to load and display blog posts
+// async function loadBlogPosts() {
+//     const postZone = document.querySelector('.post-zone');
+  
+//     if (!postZone) {
+//       console.error("Post zone element not found!");
+//     //   return;
+//       return Promise.reject("Post zone not found");
+//     }
+  
+//     console.log("loading posts...");
+  
+//     // clear any existing content
+//     postZone.innerHTML = "";
+  
+//     // create a container for posts that can scroll
+//     const postContainer = document.createElement('div');
+//     postContainer.className = 'post-container';
+//     postZone.appendChild(postContainer);
+  
+//     // Initialize blog system and load posts
+//     const blog = new BlogSystem();
+//     const posts = await blog.loadPosts();
+  
+//     // Display posts or fall back to protoPosts if none found
+//     if (posts.length > 0) {
+//       posts.forEach(post => {
+//         if (post) {
+//           const postElement = createPostElement(post);
+//           postContainer.appendChild(postElement);
+//         }
+//       });
+//     } else {
+//       console.warn("No markdown posts found, falling back to prototype posts");
+//       protoPosts.forEach(post => {
+//         const postElement = createPostElement(post);
+//         postContainer.appendChild(postElement);
+//       });
+//     }
+
+//     return Promise.resolve(posts); // return a resolved promise when done
+//   }
   
 
 // Function to create a post element

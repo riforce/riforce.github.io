@@ -345,3 +345,32 @@ a, button, input {
 .dot:hover {
     background-color: rgb(255, 103, 128);
 }
+
+/*===========================
+    LOADING STYLING
+=============================*/
+.loading-indicator {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+}
+
+.load-more-btn {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background: #333;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.load-more-btn:hover {
+    background: #555;
+}
+
+.load-more-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
