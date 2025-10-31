@@ -28,11 +28,19 @@ const postFiles = getAllMarkdownFiles(postsDir);
 // sort by date (newest first) by reading front matter
 const postsWithDates = postFiles.map(file => {
     const content = fs.readFileSync(path.join(postsDir, file), 'utf8');
+    // match date in front matter
     const dateMatch = content.match(/^date:\s*(.+)$/m);
-    return {
-        file,
-        date: dateMatch ? new Date(dateMatch[1]) : new Date(0)
-    };
+    const dateStr = dateMatch ? dateMatch[1].trim() : null;
+    // parse the date
+    let date;
+    if (dateStr) {
+        date = new Date(dateStr);
+    } else {
+        console.warn(`No date found in ${file}, using epoch`);
+        date = new Date(0);
+    }
+    console.log(`${file}: ${dateStr} -> ${date.toISOString()}`);
+    return { file, date };
 });
 
 postsWithDates.sort((a,b) => b.date - a.date);
