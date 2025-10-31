@@ -272,23 +272,17 @@ async function initializeBlog() {
   postZone.appendChild(postContainer);
 
   // create loading indicator
-  // want to make this more modular?? Keep styling separate?
   const loadingIndicator = document.createElement('div');
   loadingIndicator.className = 'loading-indicator';
   loadingIndicator.textContent = 'Loading posts...';
-  loadingIndicator.style.textAlign = 'center';
-  loadingIndicator.style.padding = '20px';
-  postZone.appendChild(loadingIndicator);
+  postContainer.appendChild(loadingIndicator);
 
   // create "load more" button
   const loadMoreBtn = document.createElement('button');
   loadMoreBtn.className = 'load-more-btn';
   loadMoreBtn.textContent = 'Load More Posts';
   loadMoreBtn.style.display = 'none';
-  loadMoreBtn.style.margin = '20px auto';
-  loadMoreBtn.style.padding = '10px 20px';
-  loadMoreBtn.style.display = 'block';
-  postZone.appendChild(loadMoreBtn);
+  postContainer.appendChild(loadMoreBtn);
 
   // initialize blog system
   blog = new BlogSystem();

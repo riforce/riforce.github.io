@@ -352,25 +352,30 @@ a, button, input {
 .loading-indicator {
     text-align: center;
     padding: 20px;
-    color: #666;
+    color: rgb(132, 123, 39);
+    font-family: 'Typewriter';
 }
 
 .load-more-btn {
     display: block;
     margin: 20px auto;
-    padding: 10px 20px;
-    background: #333;
-    color: white;
+    padding: 12px 24px;
+    background: rgb(255, 103, 128);
+    color: rgb(255, 253, 237);
     border: none;
     cursor: pointer;
-    border-radius: 5px;
+    border-radius: 25px;
+    font-family: 'Blobby';
+    font-size: 16px;
+    transition: background 0.3s ease;
 }
 
 .load-more-btn:hover {
-    background: #555;
+    background: rgb(255, 161, 53);
 }
 
 .load-more-btn:disabled {
-    background: #ccc;
+    background: rgb(255, 185, 196);
     cursor: not-allowed;
+    opacity: 0.6;
 }
